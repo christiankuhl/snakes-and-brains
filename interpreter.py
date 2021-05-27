@@ -1,3 +1,8 @@
+from dataclasses import dataclass
+
+TAPE_LENGTH = 30000
+CELL_SIZE = 256
+
 CONSTANTS = {
     16: ">++++[<++++>-]<",
     17: ">++++[<++++>-]<+",
@@ -227,16 +232,120 @@ CONSTANTS = {
     241: ">---[<----->+]<",
 }
 
-_program = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.+++."
+_program = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.+++.[-]<[-]<[-]<[-]<"
 program = ">>+++++++>>++>>++++>>+++++++>>+>>++++>>+>>+++>>+>>+++++>>+>>++>>+>>++++++>>++>>++++>>+++++++>>+>>+++++>>++>>+>>+>>++++>>+++++++>>+>>+++++>>+>>+>>+>>++++>>+++++++>>+>>+++++>>++++++++++++++>>+>>+>>++++>>+++++++>>+>>+++++>>++>>+>>+>>++++>>+++++++>>+>>+++++>>+++++++++++++++++++++++++++++>>+>>+>>++++>>+++++++>>+>>+++++>>++>>+>>+>>+++++>>+>>++++++>>+>>++>>+>>++++++>>+>>++>>+>>++++++>>+>>++>>+>>++++++>>+>>++>>+>>++++++>>+>>++>>+>>++++++>>+>>++>>+>>++++++>>++>>++++>>+++++++>>+>>+++++>>+++++++>>+>>+++++>>+>>+>>+>>++++>>+>>++>>+>>++++++>>+>>+++++>>+++++++>>+>>++++>>+>>+>>++>>+++++>>+>>+++>>+>>++++>>+>>++>>+>>++++++>>+>>+++++>>+++++++++++++++++++>>++>>++>>+++>>++>>+>>++>>++++>>+++++++>>++>>+++++>>++++++++++>>+>>++>>++++>>+>>++>>+>>++++++>>++++++>>+>>+>>+++++>>+>>++++++>>++>>+++++>>+++++++>>++>>++++>>+>>++++++[<<]>>[>++++++[-<<++++++++++>>]<<++..------------------->[-<.>>+<]>[-<+>]>]<<[-[-[-[-[-[-[>++>]<+++++++++++++++++++++++++++++>]<++>]<++++++++++++++>]<+>]<++>]<<[->.<]<<]"
 
 multiply = ",>,<[>[>+>+<<-]>>[<<+>>-]<<<-].>.>."
+
+
+from sly import Lexer, Parser
+
+class BFLexer(Lexer):
+    tokens = {INCR, DECR, PTR_INCR, PTR_DECR, INPUT, OUTPUT, LPAREN, RPAREN}
+    ignore = " \t\r\n"
+    INCR = r"\+"
+    DECR = r"\-"
+    PTR_INCR = r"\>"
+    PTR_DECR = r"\<"
+    INPUT = r"\,"
+    OUTPUT = r"\."
+    LPAREN = r"\["
+    RPAREN = r"\]"
+
+class BFParser(Parser):
+    debugfile = "parser.out"
+    tokens = BFLexer.tokens
+    precedence = (("right", INCR, DECR, PTR_INCR, PTR_DECR),)
+    @_("command code")
+    def code(self, p):
+        return [p[0]] + p.code
+    @_("")
+    def code(self, p):
+        return []
+    @_("add", "ptr_offset", "input", "output", "loop")
+    def command(self, p):
+        return p[0]
+    @_("INCR add")
+    def add(self, p):
+        return p.add.incr()
+    @_("DECR add")
+    def add(self, p):
+        return p.add.decr()
+    @_("INCR", "DECR")
+    def add(self, p):
+        return Add(int(p[0] + "1"))
+    @_("PTR_INCR ptr_offset")
+    def ptr_offset(self, p):
+        return p.ptr_offset.incr()
+    @_("PTR_DECR ptr_offset")
+    def ptr_offset(self, p):
+        return p.ptr_offset.decr()
+    @_("PTR_INCR", "PTR_DECR")
+    def ptr_offset(self, p):
+        return Offset({">": 1, "<": -1}[p[0]])
+    @_("INPUT")
+    def input(self, p):
+        return Input()
+    @_("OUTPUT")
+    def output(self, p):
+        return Output()
+    @_("LPAREN code RPAREN")
+    def loop(self, p):
+        return Loop(p.code)
+
+
+class Add:
+    def __init__(self, count):
+        self.count = count
+    def incr(self):
+        self.count = (self.count + 1) % CELL_SIZE
+        return self
+    def decr(self):
+        self.count = (self.count - 1) % CELL_SIZE
+        return self
+    def __repr__(self):
+        return f"Add({self.count})"
+
+
+class Offset:
+    def __init__(self, count):
+        self.count = count
+    def incr(self):
+        self.count = (self.count + 1) % TAPE_LENGTH
+        return self
+    def decr(self):
+        self.count = (self.count - 1) % TAPE_LENGTH
+        return self
+    def __repr__(self):
+        return f"Offset({self.count})"
+
+class Input:
+    def __repr__(self):
+        return "Input"
+
+class Output:
+    def __repr__(self):
+        return "Output"
+
+class Loop:
+    def __init__(self, body):
+        self.body = body
+    def __repr__(self):
+        return f"Loop({self.body})"
+
+@dataclass
+class MachineState:
+    def __init__(self, output, tape):
+        self.output = output
+        self.tape = tape
+
+
 
 class BFInterpreter:
     def __init__(self, interactive=False):
         self.interactive = interactive
     def run(self, program, inputs=None):
-        tape = [0] * 30000
+        tape = [0] * TAPE_LENGTH
         pc = 0
         ptr = 0
         stack = []
@@ -245,16 +354,14 @@ class BFInterpreter:
         output = ""
         while True:
             try:
-                # print(tape[:10])
                 c = program[pc]
-                # print(ptr, list(chr(c) for c in tape[:14]), output)
             except IndexError:
                 break
             if not jmp:
                 if c == ">":
-                    ptr += 1
+                    ptr = (ptr + 1) % TAPE_LENGTH
                 if c == "<":
-                    ptr -= 1
+                    ptr = (ptr - 1) % TAPE_LENGTH
                 elif c == "+":
                     tape[ptr] = (tape[ptr] + 1) % 256
                 elif c == "-":
@@ -285,8 +392,26 @@ class BFInterpreter:
                     if not open:
                         jmp = False
             pc += 1
-        return output
-    
+        return MachineState(output, tape)
+
+class Program:
+    def __init__(self, source):
+        self.source = source
+    def __eq__(self, other):
+        j = BFInterpreter(interactive=False)
+        return j.run(self.source) == j.run(other.source)
+    def __lt__(self, other):
+        return len(self.source) < len(other.source)
+    def __le__(self, other):
+        return len(self.source) <= len(other.source)
+    def __add__(self, other):
+        if isinstance(other, Program):
+            return Program(self.source + other.source)
+        else:
+            return Program(self.source + other)
+    def __repr__(self):
+        return self.source
+
 def number(n):
     n = n % 256
     if n < 16: 
@@ -294,21 +419,46 @@ def number(n):
     elif n > 241:
         return "-" * (256 - n)
     return CONSTANTS[n]
-        
+
 def optimize(program):
-    program = program.replace("<>", "")
-    program = program.replace("><", "")
-    program = program.replace("+-", "")
-    program = program.replace("-+", "")
-    return program
+    new_program = program
+    while True:
+        new_program = new_program.replace("<>", "")
+        new_program = new_program.replace("><", "")
+        new_program = new_program.replace("+-", "")
+        new_program = new_program.replace("-+", "")
+        new_program = new_program.replace("+,", "")
+        new_program = new_program.replace("-,", "")
+        if new_program == program:
+            return new_program
+        else:
+            program = new_program
     
 def put_str(string):
-    return f">{'>'.join(number(ord(c)) for c in string)}[<]>"
-        
+    return Program(optimize(f">{'>'.join(number(ord(c)) for c in string)}[<]>"))
+
+def print_str(string, cleanup=True):
+    start = string[0]
+    prog = number(ord(start)) + "."
+    for c in string[1:]:
+        prog += number(ord(c) - ord(start)) + "."
+        start = c
+    if cleanup:
+        prog += "[-]"
+    return Program(optimize(prog))
+
 if __name__ == "__main__":
     interp = BFInterpreter(interactive=True)
-    # print(all(ord(interp.run(number(n) + ".")[0]) == n for n in range(256)))
     helloworld = put_str("Dickmilch!\n") + "[[.>]<[<]>]"
-    helloworld = optimize(helloworld)
-    print(helloworld)
-    # interp.run(helloworld)
+    helloworld2 = Program("+[>") + print_str("Dickmilch!\n") + "[-]<]"
+    lexer = BFLexer()
+    parser = BFParser()
+    # for t in lexer.tokenize(helloworld.source):
+    #     print(t)
+    print(parser.parse(lexer.tokenize(helloworld2.source)))
+
+    # print(helloworld)
+    # print(helloworld2)
+    # print(Program(_program) == print_str("Hello world!"))
+    # print(helloworld > helloworld2)
+    

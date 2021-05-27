@@ -1,0 +1,424 @@
+Grammar:
+
+Rule 0     S' -> code
+Rule 1     code -> <empty>
+Rule 2     code -> command code
+Rule 3     command -> loop
+Rule 4     command -> output
+Rule 5     command -> input
+Rule 6     command -> ptr_offset
+Rule 7     command -> add
+Rule 8     add -> DECR  [precedence=right, level=1]
+Rule 9     add -> INCR  [precedence=right, level=1]
+Rule 10    add -> DECR add  [precedence=right, level=1]
+Rule 11    add -> INCR add  [precedence=right, level=1]
+Rule 12    ptr_offset -> PTR_DECR  [precedence=right, level=1]
+Rule 13    ptr_offset -> PTR_INCR  [precedence=right, level=1]
+Rule 14    ptr_offset -> PTR_DECR ptr_offset  [precedence=right, level=1]
+Rule 15    ptr_offset -> PTR_INCR ptr_offset  [precedence=right, level=1]
+Rule 16    input -> INPUT
+Rule 17    output -> OUTPUT
+Rule 18    loop -> LPAREN code RPAREN
+
+Terminals, with rules where they appear:
+
+DECR                 : 8 10
+INCR                 : 9 11
+INPUT                : 16
+LPAREN               : 18
+OUTPUT               : 17
+PTR_DECR             : 12 14
+PTR_INCR             : 13 15
+RPAREN               : 18
+error                : 
+
+Nonterminals, with rules where they appear:
+
+add                  : 7 10 11
+code                 : 2 18 0
+command              : 2
+input                : 5
+loop                 : 3
+output               : 4
+ptr_offset           : 6 14 15
+
+
+state 0
+
+    (0) S' -> . code
+    (1) code -> .
+    (2) code -> . command code
+    (3) command -> . loop
+    (4) command -> . output
+    (5) command -> . input
+    (6) command -> . ptr_offset
+    (7) command -> . add
+    (18) loop -> . LPAREN code RPAREN
+    (17) output -> . OUTPUT
+    (16) input -> . INPUT
+    (12) ptr_offset -> . PTR_DECR
+    (13) ptr_offset -> . PTR_INCR
+    (14) ptr_offset -> . PTR_DECR ptr_offset
+    (15) ptr_offset -> . PTR_INCR ptr_offset
+    (8) add -> . DECR
+    (9) add -> . INCR
+    (10) add -> . DECR add
+    (11) add -> . INCR add
+    $end            reduce using rule 1 (code -> .)
+    LPAREN          shift and go to state 8
+    OUTPUT          shift and go to state 9
+    INPUT           shift and go to state 10
+    PTR_DECR        shift and go to state 11
+    PTR_INCR        shift and go to state 12
+    DECR            shift and go to state 13
+    INCR            shift and go to state 14
+
+    code                           shift and go to state 1
+    command                        shift and go to state 2
+    loop                           shift and go to state 3
+    output                         shift and go to state 4
+    input                          shift and go to state 5
+    ptr_offset                     shift and go to state 6
+    add                            shift and go to state 7
+
+state 1
+
+    (0) S' -> code .
+
+
+state 2
+
+    (2) code -> command . code
+    (1) code -> .
+    (2) code -> . command code
+    (3) command -> . loop
+    (4) command -> . output
+    (5) command -> . input
+    (6) command -> . ptr_offset
+    (7) command -> . add
+    (18) loop -> . LPAREN code RPAREN
+    (17) output -> . OUTPUT
+    (16) input -> . INPUT
+    (12) ptr_offset -> . PTR_DECR
+    (13) ptr_offset -> . PTR_INCR
+    (14) ptr_offset -> . PTR_DECR ptr_offset
+    (15) ptr_offset -> . PTR_INCR ptr_offset
+    (8) add -> . DECR
+    (9) add -> . INCR
+    (10) add -> . DECR add
+    (11) add -> . INCR add
+    $end            reduce using rule 1 (code -> .)
+    RPAREN          reduce using rule 1 (code -> .)
+    LPAREN          shift and go to state 8
+    OUTPUT          shift and go to state 9
+    INPUT           shift and go to state 10
+    PTR_DECR        shift and go to state 11
+    PTR_INCR        shift and go to state 12
+    DECR            shift and go to state 13
+    INCR            shift and go to state 14
+
+    command                        shift and go to state 2
+    code                           shift and go to state 15
+    loop                           shift and go to state 3
+    output                         shift and go to state 4
+    input                          shift and go to state 5
+    ptr_offset                     shift and go to state 6
+    add                            shift and go to state 7
+
+state 3
+
+    (3) command -> loop .
+    LPAREN          reduce using rule 3 (command -> loop .)
+    OUTPUT          reduce using rule 3 (command -> loop .)
+    INPUT           reduce using rule 3 (command -> loop .)
+    PTR_DECR        reduce using rule 3 (command -> loop .)
+    PTR_INCR        reduce using rule 3 (command -> loop .)
+    DECR            reduce using rule 3 (command -> loop .)
+    INCR            reduce using rule 3 (command -> loop .)
+    $end            reduce using rule 3 (command -> loop .)
+    RPAREN          reduce using rule 3 (command -> loop .)
+
+
+state 4
+
+    (4) command -> output .
+    LPAREN          reduce using rule 4 (command -> output .)
+    OUTPUT          reduce using rule 4 (command -> output .)
+    INPUT           reduce using rule 4 (command -> output .)
+    PTR_DECR        reduce using rule 4 (command -> output .)
+    PTR_INCR        reduce using rule 4 (command -> output .)
+    DECR            reduce using rule 4 (command -> output .)
+    INCR            reduce using rule 4 (command -> output .)
+    $end            reduce using rule 4 (command -> output .)
+    RPAREN          reduce using rule 4 (command -> output .)
+
+
+state 5
+
+    (5) command -> input .
+    LPAREN          reduce using rule 5 (command -> input .)
+    OUTPUT          reduce using rule 5 (command -> input .)
+    INPUT           reduce using rule 5 (command -> input .)
+    PTR_DECR        reduce using rule 5 (command -> input .)
+    PTR_INCR        reduce using rule 5 (command -> input .)
+    DECR            reduce using rule 5 (command -> input .)
+    INCR            reduce using rule 5 (command -> input .)
+    $end            reduce using rule 5 (command -> input .)
+    RPAREN          reduce using rule 5 (command -> input .)
+
+
+state 6
+
+    (6) command -> ptr_offset .
+    LPAREN          reduce using rule 6 (command -> ptr_offset .)
+    OUTPUT          reduce using rule 6 (command -> ptr_offset .)
+    INPUT           reduce using rule 6 (command -> ptr_offset .)
+    PTR_DECR        reduce using rule 6 (command -> ptr_offset .)
+    PTR_INCR        reduce using rule 6 (command -> ptr_offset .)
+    DECR            reduce using rule 6 (command -> ptr_offset .)
+    INCR            reduce using rule 6 (command -> ptr_offset .)
+    $end            reduce using rule 6 (command -> ptr_offset .)
+    RPAREN          reduce using rule 6 (command -> ptr_offset .)
+
+
+state 7
+
+    (7) command -> add .
+    LPAREN          reduce using rule 7 (command -> add .)
+    OUTPUT          reduce using rule 7 (command -> add .)
+    INPUT           reduce using rule 7 (command -> add .)
+    PTR_DECR        reduce using rule 7 (command -> add .)
+    PTR_INCR        reduce using rule 7 (command -> add .)
+    DECR            reduce using rule 7 (command -> add .)
+    INCR            reduce using rule 7 (command -> add .)
+    $end            reduce using rule 7 (command -> add .)
+    RPAREN          reduce using rule 7 (command -> add .)
+
+
+state 8
+
+    (18) loop -> LPAREN . code RPAREN
+    (1) code -> .
+    (2) code -> . command code
+    (3) command -> . loop
+    (4) command -> . output
+    (5) command -> . input
+    (6) command -> . ptr_offset
+    (7) command -> . add
+    (18) loop -> . LPAREN code RPAREN
+    (17) output -> . OUTPUT
+    (16) input -> . INPUT
+    (12) ptr_offset -> . PTR_DECR
+    (13) ptr_offset -> . PTR_INCR
+    (14) ptr_offset -> . PTR_DECR ptr_offset
+    (15) ptr_offset -> . PTR_INCR ptr_offset
+    (8) add -> . DECR
+    (9) add -> . INCR
+    (10) add -> . DECR add
+    (11) add -> . INCR add
+    RPAREN          reduce using rule 1 (code -> .)
+    LPAREN          shift and go to state 8
+    OUTPUT          shift and go to state 9
+    INPUT           shift and go to state 10
+    PTR_DECR        shift and go to state 11
+    PTR_INCR        shift and go to state 12
+    DECR            shift and go to state 13
+    INCR            shift and go to state 14
+
+    code                           shift and go to state 16
+    command                        shift and go to state 2
+    loop                           shift and go to state 3
+    output                         shift and go to state 4
+    input                          shift and go to state 5
+    ptr_offset                     shift and go to state 6
+    add                            shift and go to state 7
+
+state 9
+
+    (17) output -> OUTPUT .
+    LPAREN          reduce using rule 17 (output -> OUTPUT .)
+    OUTPUT          reduce using rule 17 (output -> OUTPUT .)
+    INPUT           reduce using rule 17 (output -> OUTPUT .)
+    PTR_DECR        reduce using rule 17 (output -> OUTPUT .)
+    PTR_INCR        reduce using rule 17 (output -> OUTPUT .)
+    DECR            reduce using rule 17 (output -> OUTPUT .)
+    INCR            reduce using rule 17 (output -> OUTPUT .)
+    $end            reduce using rule 17 (output -> OUTPUT .)
+    RPAREN          reduce using rule 17 (output -> OUTPUT .)
+
+
+state 10
+
+    (16) input -> INPUT .
+    LPAREN          reduce using rule 16 (input -> INPUT .)
+    OUTPUT          reduce using rule 16 (input -> INPUT .)
+    INPUT           reduce using rule 16 (input -> INPUT .)
+    PTR_DECR        reduce using rule 16 (input -> INPUT .)
+    PTR_INCR        reduce using rule 16 (input -> INPUT .)
+    DECR            reduce using rule 16 (input -> INPUT .)
+    INCR            reduce using rule 16 (input -> INPUT .)
+    $end            reduce using rule 16 (input -> INPUT .)
+    RPAREN          reduce using rule 16 (input -> INPUT .)
+
+
+state 11
+
+    (12) ptr_offset -> PTR_DECR .
+    (14) ptr_offset -> PTR_DECR . ptr_offset
+    (12) ptr_offset -> . PTR_DECR
+    (13) ptr_offset -> . PTR_INCR
+    (14) ptr_offset -> . PTR_DECR ptr_offset
+    (15) ptr_offset -> . PTR_INCR ptr_offset
+    LPAREN          reduce using rule 12 (ptr_offset -> PTR_DECR .)
+    OUTPUT          reduce using rule 12 (ptr_offset -> PTR_DECR .)
+    INPUT           reduce using rule 12 (ptr_offset -> PTR_DECR .)
+    DECR            reduce using rule 12 (ptr_offset -> PTR_DECR .)
+    INCR            reduce using rule 12 (ptr_offset -> PTR_DECR .)
+    $end            reduce using rule 12 (ptr_offset -> PTR_DECR .)
+    RPAREN          reduce using rule 12 (ptr_offset -> PTR_DECR .)
+    PTR_DECR        shift and go to state 11
+    PTR_INCR        shift and go to state 12
+
+    ptr_offset                     shift and go to state 17
+
+state 12
+
+    (13) ptr_offset -> PTR_INCR .
+    (15) ptr_offset -> PTR_INCR . ptr_offset
+    (12) ptr_offset -> . PTR_DECR
+    (13) ptr_offset -> . PTR_INCR
+    (14) ptr_offset -> . PTR_DECR ptr_offset
+    (15) ptr_offset -> . PTR_INCR ptr_offset
+    LPAREN          reduce using rule 13 (ptr_offset -> PTR_INCR .)
+    OUTPUT          reduce using rule 13 (ptr_offset -> PTR_INCR .)
+    INPUT           reduce using rule 13 (ptr_offset -> PTR_INCR .)
+    DECR            reduce using rule 13 (ptr_offset -> PTR_INCR .)
+    INCR            reduce using rule 13 (ptr_offset -> PTR_INCR .)
+    $end            reduce using rule 13 (ptr_offset -> PTR_INCR .)
+    RPAREN          reduce using rule 13 (ptr_offset -> PTR_INCR .)
+    PTR_DECR        shift and go to state 11
+    PTR_INCR        shift and go to state 12
+
+    ptr_offset                     shift and go to state 18
+
+state 13
+
+    (8) add -> DECR .
+    (10) add -> DECR . add
+    (8) add -> . DECR
+    (9) add -> . INCR
+    (10) add -> . DECR add
+    (11) add -> . INCR add
+    LPAREN          reduce using rule 8 (add -> DECR .)
+    OUTPUT          reduce using rule 8 (add -> DECR .)
+    INPUT           reduce using rule 8 (add -> DECR .)
+    PTR_DECR        reduce using rule 8 (add -> DECR .)
+    PTR_INCR        reduce using rule 8 (add -> DECR .)
+    $end            reduce using rule 8 (add -> DECR .)
+    RPAREN          reduce using rule 8 (add -> DECR .)
+    DECR            shift and go to state 13
+    INCR            shift and go to state 14
+
+    add                            shift and go to state 19
+
+state 14
+
+    (9) add -> INCR .
+    (11) add -> INCR . add
+    (8) add -> . DECR
+    (9) add -> . INCR
+    (10) add -> . DECR add
+    (11) add -> . INCR add
+    LPAREN          reduce using rule 9 (add -> INCR .)
+    OUTPUT          reduce using rule 9 (add -> INCR .)
+    INPUT           reduce using rule 9 (add -> INCR .)
+    PTR_DECR        reduce using rule 9 (add -> INCR .)
+    PTR_INCR        reduce using rule 9 (add -> INCR .)
+    $end            reduce using rule 9 (add -> INCR .)
+    RPAREN          reduce using rule 9 (add -> INCR .)
+    DECR            shift and go to state 13
+    INCR            shift and go to state 14
+
+    add                            shift and go to state 20
+
+state 15
+
+    (2) code -> command code .
+    $end            reduce using rule 2 (code -> command code .)
+    RPAREN          reduce using rule 2 (code -> command code .)
+
+
+state 16
+
+    (18) loop -> LPAREN code . RPAREN
+    RPAREN          shift and go to state 21
+
+
+state 17
+
+    (14) ptr_offset -> PTR_DECR ptr_offset .
+    LPAREN          reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    OUTPUT          reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    INPUT           reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    PTR_DECR        reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    PTR_INCR        reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    DECR            reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    INCR            reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    $end            reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+    RPAREN          reduce using rule 14 (ptr_offset -> PTR_DECR ptr_offset .)
+
+
+state 18
+
+    (15) ptr_offset -> PTR_INCR ptr_offset .
+    LPAREN          reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    OUTPUT          reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    INPUT           reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    PTR_DECR        reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    PTR_INCR        reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    DECR            reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    INCR            reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    $end            reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+    RPAREN          reduce using rule 15 (ptr_offset -> PTR_INCR ptr_offset .)
+
+
+state 19
+
+    (10) add -> DECR add .
+    LPAREN          reduce using rule 10 (add -> DECR add .)
+    OUTPUT          reduce using rule 10 (add -> DECR add .)
+    INPUT           reduce using rule 10 (add -> DECR add .)
+    PTR_DECR        reduce using rule 10 (add -> DECR add .)
+    PTR_INCR        reduce using rule 10 (add -> DECR add .)
+    DECR            reduce using rule 10 (add -> DECR add .)
+    INCR            reduce using rule 10 (add -> DECR add .)
+    $end            reduce using rule 10 (add -> DECR add .)
+    RPAREN          reduce using rule 10 (add -> DECR add .)
+
+
+state 20
+
+    (11) add -> INCR add .
+    LPAREN          reduce using rule 11 (add -> INCR add .)
+    OUTPUT          reduce using rule 11 (add -> INCR add .)
+    INPUT           reduce using rule 11 (add -> INCR add .)
+    PTR_DECR        reduce using rule 11 (add -> INCR add .)
+    PTR_INCR        reduce using rule 11 (add -> INCR add .)
+    DECR            reduce using rule 11 (add -> INCR add .)
+    INCR            reduce using rule 11 (add -> INCR add .)
+    $end            reduce using rule 11 (add -> INCR add .)
+    RPAREN          reduce using rule 11 (add -> INCR add .)
+
+
+state 21
+
+    (18) loop -> LPAREN code RPAREN .
+    LPAREN          reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    OUTPUT          reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    INPUT           reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    PTR_DECR        reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    PTR_INCR        reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    DECR            reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    INCR            reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    $end            reduce using rule 18 (loop -> LPAREN code RPAREN .)
+    RPAREN          reduce using rule 18 (loop -> LPAREN code RPAREN .)
